@@ -50,23 +50,28 @@ public class ScanSelenium {
     }
 
     private void checkBanner() {
-        if (!url.equals(driver.getCurrentUrl())) {
-            driver.get(url);
-            delay();
-        }
-        WebElement banner = driver.findElement(By.xpath(xpath));
-        if (banner.getText().contains(text)) {
-            System.out.println(Colors.YELLOW.getCode() + "No review" + Colors.RESET.getCode());
-            isSent = false;
-        } else {
-            if (!isSent) {
-                sender.sendAll();
-                System.out.println(Colors.GREEN.getCode() + "Message sent" + Colors.RESET.getCode());
-                Logger.logSentMessage(countOfCheck);
-                isSent = true;
-            } else {
-                System.out.println(Colors.RED.getCode() + "Review available. Message was sent" + Colors.RESET.getCode());
+        try {
+            if (!url.equals(driver.getCurrentUrl())) {
+                driver.get(url);
+                delay();
             }
+            WebElement banner = driver.findElement(By.xpath(xpath));
+            if (banner.getText().contains(text)) {
+                MessagePrint.print("No review", Colors.YELLOW);
+                isSent = false;
+            } else {
+                if (!isSent) {
+                    sender.sendAll();
+                    MessagePrint.print("Message sent", Colors.GREEN);
+                    new Sound().sentMessage();
+                    Logger.logSentMessage(countOfCheck);
+                    isSent = true;
+                } else {
+                    MessagePrint.print("Review available. Message was sent", Colors.CYAN);
+                }
+            }
+        } catch (NoSuchElementException e) {
+            MessagePrint.print("Еhe page is not available", Colors.RED);
         }
     }
 
