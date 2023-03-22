@@ -13,7 +13,6 @@ public final class TelegramSender implements SendAble {
         this.chatID = chatID;
     }
 
-
     @Override
     public void send(String message) {
         bot.execute(new SendMessage(chatID, message));
