@@ -1,6 +1,6 @@
 package org.example.notifications;
 
-public interface SendAble {
+public interface NotificationProxy {
 
     void send(String message);
 }

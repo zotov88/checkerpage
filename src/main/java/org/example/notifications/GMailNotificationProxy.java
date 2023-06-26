@@ -1,14 +1,12 @@
 package org.example.notifications;
 
 
-import org.example.Colors;
-
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
-public final class GMailSender implements SendAble {
+public final class GMailNotificationProxy implements NotificationProxy {
 
     private final String from;
     private final String to;
@@ -17,7 +15,7 @@ public final class GMailSender implements SendAble {
     private final String password;
     private final Properties properties = new Properties();
 
-    public GMailSender(String from, String to, String host, String smtpPort, String password) {
+    public GMailNotificationProxy(String from, String to, String host, String smtpPort, String password) {
         this.from = from;
         this.to = to;
         this.host = host;

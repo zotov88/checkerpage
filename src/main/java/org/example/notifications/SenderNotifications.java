@@ -4,16 +4,16 @@ import java.util.List;
 
 public final class SenderNotifications {
 
-    private final List<SendAble> notifiers;
+    private final List<NotificationProxy> notifiers;
     private final String message;
 
-    public SenderNotifications(List<SendAble> notifiers, String message) {
+    public SenderNotifications(List<NotificationProxy> notifiers, String message) {
         this.notifiers = notifiers;
         this.message = message;
     }
 
     public void sendAll() {
-        for (SendAble notifier : notifiers) {
+        for (NotificationProxy notifier : notifiers) {
             notifier.send(message);
         }
     }

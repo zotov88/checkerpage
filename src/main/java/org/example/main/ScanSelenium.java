@@ -1,7 +1,14 @@
-package org.example;
+package org.example.main;
 
+import org.example.constants.NotifyMessage;
+import org.example.constants.PageAnalysis;
+import org.example.helpers.Logger;
+import org.example.helpers.MessagePrint;
 import org.example.notifications.SenderNotifications;
+import org.example.helpers.Colors;
+import org.example.helpers.Sound;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -26,6 +33,9 @@ public class ScanSelenium {
                         final String usernameID, final String passwordID, final String logButtonTagName,
                         final String xpath, final String text, final int delaySeconds, final SenderNotifications sender) {
         this.driver = new FirefoxDriver();
+//        ChromeOptions options = new ChromeOptions().addArguments("--remote-allow-origins=*");
+//        this.driver = new ChromeDriver(options);
+        this.driver.manage().window().setSize(new Dimension(1, 1));
         this.url = url;
         this.usernameID = usernameID;
         this.passwordID = passwordID;
@@ -52,26 +62,32 @@ public class ScanSelenium {
     private void checkBanner() {
         try {
             if (!url.equals(driver.getCurrentUrl())) {
-                driver.get(url);
-                delay();
+                if (driver.getCurrentUrl().contains(PageAnalysis.PAGE_AUTHENTICATION)) {
+                    authorization();
+                } else {
+                    driver.get(url);
+                    delay();
+                }
             }
             WebElement banner = driver.findElement(By.xpath(xpath));
-            if (banner.getText().contains(text)) {
-                MessagePrint.print("No review", Colors.YELLOW);
+            String receivedText = banner.getText();
+            if (receivedText == null || receivedText.isEmpty() || receivedText.contains(text)) {
+                MessagePrint.print(NotifyMessage.NO_REVIEW, Colors.YELLOW);
                 isSent = false;
             } else {
                 if (!isSent) {
                     sender.sendAll();
-                    MessagePrint.print("Message sent", Colors.GREEN);
+                    MessagePrint.print(NotifyMessage.MESSAGE_SENT, Colors.GREEN);
+                    Logger.logMessage(NotifyMessage.MESSAGE_SENT);
                     new Sound().sentMessage();
-                    Logger.logSentMessage(countOfCheck);
                     isSent = true;
                 } else {
-                    MessagePrint.print("Review available. Message was sent", Colors.CYAN);
+                    MessagePrint.print(NotifyMessage.REVIEW_AVAILABLE, Colors.CYAN);
                 }
             }
         } catch (NoSuchElementException e) {
-            MessagePrint.print("Еhe page is not available", Colors.RED);
+            Logger.logMessage(NotifyMessage.PAGE_NOT_AVAILABLE);
+            MessagePrint.print(NotifyMessage.PAGE_NOT_AVAILABLE, Colors.RED);
         }
     }
 
@@ -84,7 +100,7 @@ public class ScanSelenium {
             usernameWeb.sendKeys(username);
             passwordWeb.sendKeys(password);
             loginButtonWeb.click();
-            Logger.logAuthorization();
+            Logger.logMessage(NotifyMessage.AUTHORIZATION_SUCCESSFUL);
         } catch (Exception e) {
             e.printStackTrace();
         }
